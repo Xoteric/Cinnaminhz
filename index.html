@@ -463,6 +463,13 @@
                     Autistic (High-Functioning!)
                 </p>
 
+                <div style="margin: 25px 0; padding: 15px; background: linear-gradient(180deg, #F0EDE2 0%, #E8E5D8 100%); border: 2px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF;">
+                    <h2 style="font-size: 14px; margin-bottom: 10px; color: #000080;">🎵 Currently Listening</h2>
+                    <div id="nowPlaying" style="font-size: 12px; color: #000;">
+                        <div style="opacity: 0.6;">Loading...</div>
+                    </div>
+                </div>
+
                 <div class="button-group">
                     <a href="#" class="xp-button back-btn" onclick="showMain(); return false;">
                         <span>←</span> Back
@@ -473,6 +480,52 @@
     </div>
 
     <script>
+        // Last.fm API Configuration
+        const LASTFM_API_KEY = 'bcf28fafee7079f8990693f30b549f10';
+        const LASTFM_USERNAME = 'RainyJapan';
+
+        // Fetch currently playing track
+        async function fetchNowPlaying() {
+            try {
+                const response = await fetch(
+                    `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
+                );
+                const data = await response.json();
+                
+                if (data.recenttracks && data.recenttracks.track && data.recenttracks.track.length > 0) {
+                    const track = data.recenttracks.track[0];
+                    const isNowPlaying = track['@attr'] && track['@attr'].nowplaying === 'true';
+                    
+                    const artist = track.artist['#text'] || track.artist;
+                    const song = track.name;
+                    const album = track.album['#text'] || 'Unknown Album';
+                    
+                    const statusIcon = isNowPlaying ? '🎵' : '⏸️';
+                    const statusText = isNowPlaying ? 'Now Playing' : 'Last Played';
+                    
+                    document.getElementById('nowPlaying').innerHTML = `
+                        <div style="margin-bottom: 5px;"><strong>${statusIcon} ${statusText}</strong></div>
+                        <div style="margin-bottom: 3px;">🎵 <strong>${song}</strong></div>
+                        <div style="margin-bottom: 3px;">👤 ${artist}</div>
+                        <div style="opacity: 0.7;">💿 ${album}</div>
+                    `;
+                } else {
+                    document.getElementById('nowPlaying').innerHTML = 
+                        '<div style="opacity: 0.6;">No recent tracks found</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching Last.fm data:', error);
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<div style="opacity: 0.6;">Unable to load music data</div>';
+            }
+        }
+
+        // Update every 30 seconds
+        function startMusicUpdates() {
+            fetchNowPlaying();
+            setInterval(fetchNowPlaying, 30000);
+        }
+
         // VHS Timestamp
         function updateVHSTime() {
             const now = new Date();
@@ -533,6 +586,8 @@
             document.getElementById('aboutPage').style.display = 'flex';
             // Change video for about page
             document.getElementById('bgVideo').src = './about-video.mp4';
+            // Start fetching music when about page is opened
+            startMusicUpdates();
         }
 
         function showMain() {
