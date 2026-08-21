@@ -527,6 +527,7 @@
             height: 120px;
             margin: 0 auto 15px;
             background-color: #C3C7CB;
+            background-image: url('./PFP.jpg');
             background-size: cover;
             background-position: center;
             border: 3px solid;
@@ -983,7 +984,7 @@
                 </div>
 
                 <div class="kirara-frame">
-                    <img src="" alt="kirara" style="display:none;">
+                    <img src="./kirara.jpg" alt="kirara">
                     <div class="kirara-label">kirara</div>
                 </div>
 
@@ -998,97 +999,18 @@
 
     <script>
         // ============================================================
-        // Universal Asset Resolver
-        // Lets you swap "PFP.jpg" for "PFP.gif", "PFP.png", etc. without
-        // touching the HTML. It checks every candidate extension for a
-        // given base name (e.g. "PFP", "main-video") and picks whichever
-        // file actually exists on the server, most-recently-modified
-        // one wins if more than one match is found.
-        //
-        // NOTE: requires the page to be served over http(s) — this will
-        // not work opened directly from disk (file://) because browsers
-        // block the HEAD requests needed to check for the files.
+        // Background video swap
+        // Every filename below is hardcoded to match what's actually in
+        // the repo (main-video.mp4 / about-video.mp4). No HEAD probing,
+        // no guessing extensions — this just points the <source> tag at
+        // the real file directly.
         // ============================================================
-
-        const ASSET_IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp']; // priority order (used as tiebreaker)
-        const ASSET_VIDEO_EXTS = ['mp4', 'webm', 'mov'];
-
-        const assetResolveCache = {};
-
-        // Finds every file matching `./baseName.<ext>` for the given ext list,
-        // and returns the URL of the most recently modified one (falls back
-        // to extension priority order if modified dates are missing/tied).
-        async function resolveAsset(baseName, extensions) {
-            const cacheKey = baseName + '|' + extensions.join(',');
-            if (assetResolveCache[cacheKey]) return assetResolveCache[cacheKey];
-
-            const checks = extensions.map(async (ext, priorityIndex) => {
-                const url = `./${baseName}.${ext}`;
-                try {
-                    const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-                    if (!res.ok) return null;
-                    const lastModifiedHeader = res.headers.get('Last-Modified');
-                    const mtime = lastModifiedHeader ? new Date(lastModifiedHeader).getTime() : NaN;
-                    return { url, priorityIndex, mtime };
-                } catch (err) {
-                    return null; // file missing, blocked, or network error
-                }
-            });
-
-            const results = (await Promise.all(checks)).filter(Boolean);
-            if (results.length === 0) {
-                assetResolveCache[cacheKey] = null;
-                return null;
-            }
-
-            results.sort((a, b) => {
-                const aHasTime = !Number.isNaN(a.mtime);
-                const bHasTime = !Number.isNaN(b.mtime);
-                if (aHasTime && bHasTime && a.mtime !== b.mtime) {
-                    return b.mtime - a.mtime; // newest first
-                }
-                if (aHasTime !== bHasTime) {
-                    return aHasTime ? -1 : 1; // prefer whichever has a known mtime
-                }
-                return a.priorityIndex - b.priorityIndex; // tie -> extension list order
-            });
-
-            assetResolveCache[cacheKey] = results[0].url;
-            return results[0].url;
-        }
-
-        async function applyProfilePic() {
-            const url = await resolveAsset('PFP', ASSET_IMAGE_EXTS);
-            const el = document.querySelector('.profile-pic');
-            if (url) el.style.backgroundImage = `url('${url}')`;
-        }
-
-        async function applyKirara() {
-            const url = await resolveAsset('kirara', ASSET_IMAGE_EXTS);
-            const img = document.querySelector('.kirara-frame img');
-            const label = document.querySelector('.kirara-label');
-            if (url) {
-                img.src = url;
-                img.style.display = '';
-            } else {
-                img.style.display = 'none';
-                if (label) label.textContent = 'kirara (missing)';
-            }
-        }
-
-        async function setBgVideo(baseName) {
-            const url = await resolveAsset(baseName, ASSET_VIDEO_EXTS);
+        function setBgVideo(baseName) {
             const video = document.getElementById('bgVideo');
-            if (url) {
-                video.querySelector('source').src = url;
-                video.load();
-                video.play().catch(() => {});
-            }
+            video.querySelector('source').src = `./${baseName}.mp4`;
+            video.load();
+            video.play().catch(() => {});
         }
-
-        // Kick off initial resolution
-        applyProfilePic();
-        setBgVideo('main-video');
 
         // Last.fm API Configuration
         const LASTFM_API_KEY = 'bcf28fafee7079f8990693f30b549f10';
@@ -1292,7 +1214,6 @@
         // actually fullscreen anything, it just throws this fake error)
         function toggleFullscreenShoutout() {
             document.getElementById('shoutoutOverlay').style.display = 'flex';
-            applyKirara();
         }
 
         function closeShoutout() {
@@ -1340,14 +1261,14 @@
         function showAbout() {
             document.getElementById('mainPage').style.display = 'none';
             document.getElementById('aboutPage').style.display = 'flex';
-            // Change video for about page (resolves about-video.* to whatever exists)
+            // Change video for about page
             setBgVideo('about-video');
         }
 
         function showMain() {
             document.getElementById('aboutPage').style.display = 'none';
             document.getElementById('mainPage').style.display = 'flex';
-            // Change back to main video (resolves main-video.* to whatever exists)
+            // Change back to main video
             setBgVideo('main-video');
         }
     </script>
