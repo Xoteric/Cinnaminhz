@@ -7,6 +7,22 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <style>
+        @font-face {
+            font-family: 'MS Sans Serif';
+            src: url('https://unpkg.com/98.css@0.4.1/dist/ms_sans_serif.woff2') format('woff2'),
+                 url('https://unpkg.com/98.css@0.4.1/dist/ms_sans_serif.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'MS Sans Serif';
+            src: url('https://unpkg.com/98.css@0.4.1/dist/ms_sans_serif_bold.woff2') format('woff2'),
+                 url('https://unpkg.com/98.css@0.4.1/dist/ms_sans_serif_bold.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,11 +30,78 @@
         }
 
         body {
-            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            font-family: 'MS Sans Serif', 'Tahoma', sans-serif;
             overflow: hidden;
             width: 100vw;
             height: 100vh;
             position: relative;
+            background: #000;
+        }
+
+        .crt-frame {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            border-radius: 2.5% / 2%;
+            filter: url(#crtFishEye) saturate(1.25) contrast(1.08);
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.6),
+                inset 0 0 120px rgba(0, 0, 0, 0.85),
+                inset 0 0 260px rgba(0, 0, 0, 0.5);
+            animation: crtFlicker 6s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0%, 96%, 100% { filter: url(#crtFishEye) saturate(1.25) contrast(1.08) brightness(1); }
+            97% { filter: url(#crtFishEye) saturate(1.2) contrast(1.05) brightness(0.94); }
+            98% { filter: url(#crtFishEye) saturate(1.3) contrast(1.1) brightness(1.03); }
+            99% { filter: url(#crtFishEye) saturate(1.22) contrast(1.06) brightness(0.97); }
+        }
+
+        .crt-chroma {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3001;
+            mix-blend-mode: screen;
+            background:
+                linear-gradient(90deg, rgba(255, 0, 60, 0.10) 0%, rgba(255, 0, 60, 0) 4%),
+                linear-gradient(270deg, rgba(0, 180, 255, 0.10) 0%, rgba(0, 180, 255, 0) 4%);
+        }
+
+        .crt-scan-sweep {
+            position: fixed;
+            top: -20%;
+            left: 0;
+            width: 100%;
+            height: 12%;
+            pointer-events: none;
+            z-index: 3002;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.06) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            mix-blend-mode: overlay;
+            animation: scanSweep 7s linear infinite;
+        }
+
+        @keyframes scanSweep {
+            0% { top: -20%; }
+            100% { top: 120%; }
+        }
+
+        .crt-vignette-glass {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3000;
+            background: radial-gradient(
+                ellipse at 30% 20%,
+                rgba(255, 255, 255, 0.05) 0%,
+                rgba(255, 255, 255, 0) 35%
+            );
         }
 
         .video-bg {
@@ -31,7 +114,7 @@
             height: auto;
             transform: translate(-50%, -50%);
             z-index: -3;
-            filter: blur(8px) brightness(0.6) saturate(1.3) contrast(0.9);
+            filter: blur(8px) brightness(0.62) saturate(1.5) contrast(1.0);
         }
 
         .grain-overlay {
@@ -145,12 +228,131 @@
             50%, 100% { opacity: 0.3; }
         }
 
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 34px;
+            background: linear-gradient(180deg, #245EDC 0%, #3F8CF3 3%, #245EDC 6%, #1941A5 100%);
+            border-top: 1px solid #0A246A;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 -2px 10px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            padding: 2px 4px;
+            z-index: 2000;
+            gap: 4px;
+        }
+
+        .start-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 28px;
+            padding: 0 10px 0 6px;
+            background: linear-gradient(180deg, #4EA034 0%, #3C8A24 50%, #2E7D1C 100%);
+            border-radius: 4px 6px 6px 4px;
+            border: 1px solid #1C5E10;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 0 2px rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            font-style: italic;
+            color: #fff;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
+        }
+
+        .start-btn:active {
+            background: linear-gradient(180deg, #2E7D1C 0%, #3C8A24 50%, #4EA034 100%);
+        }
+
+        .start-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 2px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+            transform: skewX(-6deg);
+        }
+
+        .start-icon::before,
+        .start-icon::after {
+            content: '';
+        }
+
+        .start-icon {
+            background:
+                linear-gradient(135deg, #ff6a3d 0%, #ff8a4d 100%) 0 0 / 49% 49% no-repeat,
+                linear-gradient(135deg, #8dd63c 0%, #a8e85c 100%) 51% 0 / 49% 49% no-repeat,
+                linear-gradient(135deg, #3ea0f0 0%, #5fbaff 100%) 0 51% / 49% 49% no-repeat,
+                linear-gradient(135deg, #ffd23d 0%, #ffe066 100%) 51% 51% / 49% 49% no-repeat;
+        }
+
+        .taskbar-divider {
+            width: 2px;
+            height: 26px;
+            background: #1941A5;
+            border-right: 1px solid #4E7FE0;
+            margin: 0 3px;
+        }
+
+        .taskbar-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 26px;
+            padding: 0 10px;
+            background: linear-gradient(180deg, #3F7CE0 0%, #2E5DBF 100%);
+            border: 1px solid #163C82;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 0 4px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            max-width: 160px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .taskbar-btn:hover {
+            background: linear-gradient(180deg, #4E8CF0 0%, #3E6DCF 100%);
+        }
+
+        .taskbar-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+
+        .taskbar-tray {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            height: 28px;
+            padding: 0 12px;
+            background: linear-gradient(180deg, #1E4FC0 0%, #163C9A 100%);
+            border-left: 1px solid #0F2E70;
+            border-radius: 4px 0 0 4px;
+            box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 12px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+
         .container {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            padding-bottom: 54px;
         }
 
         .window {
@@ -190,6 +392,29 @@
             border-radius: 2px;
         }
 
+        .title-icon-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            border: 1px solid rgba(0, 0, 0, 0.35);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .title-icon-status.status-online {
+            background: linear-gradient(135deg, #6bff6b 0%, #1fb81f 100%);
+            box-shadow: 0 0 6px rgba(60, 255, 60, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .title-icon-status.status-offline {
+            background: linear-gradient(135deg, #ff6b6b 0%, #cc1f1f 100%);
+            box-shadow: 0 0 6px rgba(255, 60, 60, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .title-icon-status.status-unknown {
+            background: linear-gradient(135deg, #b0b0b0 0%, #7a7a7a 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
         .window-controls {
             display: flex;
             gap: 2px;
@@ -221,38 +446,77 @@
             overflow: hidden;
         }
 
-        .petal {
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .petals-container.gust {
+            animation: windGust 2.4s ease-in-out;
+        }
+
+        @keyframes windGust {
+            0% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(70px) rotate(1.5deg); }
+            55% { transform: translateX(130px) rotate(2.5deg); }
+            100% { transform: translateX(0) rotate(0deg); }
+        }
+
+        .petal-fall {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            top: -60px;
+            opacity: 0;
+            animation-name: fallDown;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fallDown {
+            0% { opacity: 0; transform: translateY(0); }
+            6% { opacity: 0.85; }
+            92% { opacity: 0.85; }
+            100% { opacity: 0; transform: translateY(115vh); }
+        }
+
+        .petal-gust {
+            transition: transform 2s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+
+        .petal-sway {
+            animation-name: swayMove;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+        }
+
+        @keyframes swayMove {
+            0% { transform: translateX(calc(var(--sway) * -1)); }
+            100% { transform: translateX(var(--sway)); }
+        }
+
+        .petal-shape {
+            width: var(--size);
+            height: var(--size);
             background: linear-gradient(135deg, #ff91c7 0%, #ffb3d9 50%, #ffc9e3 100%);
             border-radius: 50% 0 50% 0;
-            opacity: 0.8;
-            pointer-events: none;
-            animation: fall linear infinite;
+            box-shadow: 0 0 8px rgba(255, 145, 199, 0.35);
+            animation-name: rotatePetal;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
         }
 
-        @keyframes fall {
-            0% {
-                transform: translateY(-10px) rotate(0deg);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(600px) rotate(360deg);
-                opacity: 0;
-            }
+        @keyframes rotatePetal {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-
-        .petal:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
-        .petal:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 1s; }
-        .petal:nth-child(3) { left: 30%; animation-duration: 9s; animation-delay: 2s; }
-        .petal:nth-child(4) { left: 40%; animation-duration: 11s; animation-delay: 0.5s; }
-        .petal:nth-child(5) { left: 50%; animation-duration: 8.5s; animation-delay: 1.5s; }
-        .petal:nth-child(6) { left: 60%; animation-duration: 10.5s; animation-delay: 0.8s; }
-        .petal:nth-child(7) { left: 70%; animation-duration: 9.5s; animation-delay: 2.2s; }
-        .petal:nth-child(8) { left: 80%; animation-duration: 11.5s; animation-delay: 1.2s; }
-        .petal:nth-child(9) { left: 90%; animation-duration: 10s; animation-delay: 0.3s; }
-        .petal:nth-child(10) { left: 15%; animation-duration: 9s; animation-delay: 1.8s; }
 
         .profile-section {
             margin-bottom: 30px;
@@ -262,7 +526,7 @@
             width: 120px;
             height: 120px;
             margin: 0 auto 15px;
-            background-image: url('./PFP.jpg');
+            background-color: #C3C7CB;
             background-size: cover;
             background-position: center;
             border: 3px solid;
@@ -363,6 +627,37 @@
             border-color: #404040 #FFFFFF #FFFFFF #404040;
         }
 
+        .social-btn {
+            position: relative;
+            width: 48px;
+            overflow: hidden;
+            white-space: nowrap;
+            justify-content: flex-start;
+            padding-left: 14px;
+            transition: width 0.25s ease;
+        }
+
+        .social-btn .icon {
+            flex-shrink: 0;
+        }
+
+        .social-label {
+            margin-left: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            opacity: 0;
+            transition: opacity 0.15s ease 0.08s;
+        }
+
+        .social-btn-expand:hover {
+            width: 150px;
+        }
+
+        .social-btn-expand:hover .social-label {
+            opacity: 1;
+        }
+
         .page-about .window-content {
             text-align: left;
         }
@@ -379,6 +674,118 @@
             width: 100%;
         }
 
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 20px;
+        }
+
+        .shoutout-window {
+            max-width: 420px;
+            animation: shoutoutPop 0.2s ease-out;
+        }
+
+        @keyframes shoutoutPop {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .title-bar-error {
+            background: linear-gradient(180deg, #E33 0%, #E33 8%, #C11 92%, #A00 100%) !important;
+        }
+
+        .title-icon-warning {
+            width: 16px;
+            height: 16px;
+            background: none;
+            border-radius: 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-icon-warning svg {
+            width: 16px;
+            height: 16px;
+            display: block;
+        }
+
+        .shoutout-content {
+            text-align: left;
+        }
+
+        .error-body {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .error-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: radial-gradient(circle at 35% 30%, #ff6b6b 0%, #cc0000 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        }
+
+        .error-text {
+            flex: 1;
+        }
+
+        .shoutout-names {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .shoutout-names span {
+            background: linear-gradient(180deg, #ECE9D8 0%, #C3C7CB 100%);
+            border: 1px solid;
+            border-color: #FFFFFF #404040 #404040 #FFFFFF;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000080;
+            box-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
+        }
+
+        .kirara-frame {
+            width: 130px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .kirara-frame img {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+            background: #fff;
+            border: 2px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            box-shadow: inset 0 0 0 1px #000;
+        }
+
+        .kirara-label {
+            font-size: 11px;
+            color: #000;
+            margin-top: 4px;
+        }
+
         @media (max-width: 600px) {
             .window {
                 max-width: 100%;
@@ -387,6 +794,23 @@
     </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute;">
+    <filter id="crtFishEye" x="-10%" y="-10%" width="120%" height="120%">
+        <feImage width="100%" height="100%" preserveAspectRatio="none"
+            href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='75%25'%3E%3Cstop offset='0%25' stop-color='%23808080'/%3E%3Cstop offset='100%25' stop-color='%23ffffff'/%3E%3C/radialGradient%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E"
+            result="crtMap"/>
+        <feDisplacementMap in="SourceGraphic" in2="crtMap" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+</svg>
+<div class="crt-frame" id="crtFrame">
+    <!-- Sakura Petals -->
+    <div class="petals-container" id="petalsContainer"></div>
+
+    <!-- CRT Effects -->
+    <div class="crt-chroma"></div>
+    <div class="crt-scan-sweep"></div>
+    <div class="crt-vignette-glass"></div>
+
     <!-- Video Background -->
     <video class="video-bg" autoplay muted loop playsinline id="bgVideo" crossorigin="anonymous">
         <source src="./main-video.mp4" type="video/mp4">
@@ -419,6 +843,9 @@
             <div class="taskbar-icon"></div>
             <span>about_me.txt</span>
         </div>
+        <div class="taskbar-tray">
+            <span id="taskbarClock"></span>
+        </div>
     </div>
 
     <!-- Main Page -->
@@ -426,31 +853,20 @@
         <div class="window">
             <div class="title-bar">
                 <div class="title-text">
-                    <div class="title-icon"></div>
+                    <div class="title-icon-status status-unknown" id="statusIconMain" title="Spotify status"></div>
                     <span>Cinnaminhz.exe</span>
                 </div>
                 <div class="window-controls">
                     <div class="control-btn" onclick="minimizeWindow('mainPage')">_</div>
-                    <div class="control-btn">□</div>
+                    <div class="control-btn" onclick="toggleFullscreenShoutout()">□</div>
                     <div class="control-btn" onclick="closeWindow('mainPage')">×</div>
                 </div>
             </div>
             <div class="window-content">
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                
                 <div class="profile-section">
                     <div class="profile-pic"></div>
                     <h1>Cinnaminhz</h1>
-                    <p class="tagline">Open your eyes.</p>
+                    <p class="tagline">Reek passion right down to my sleeve.</p>
                 </div>
 
                 <div class="button-group">
@@ -465,10 +881,11 @@
                             <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                         </svg>
                     </a>
-                    <a href="https://discord.com/users/Cinnaminhz" target="_blank" class="social-btn" title="Discord">
+                    <a href="https://discord.com/users/Cinnaminhz" target="_blank" class="social-btn social-btn-expand" title="Discord">
                         <svg class="icon" fill="#5865F2" viewBox="0 0 24 24">
                             <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
                         </svg>
+                        <span class="social-label">cinnaminhz</span>
                     </a>
                     <a href="https://www.instagram.com/cinnaminhz/" target="_blank" class="social-btn" title="Instagram">
                         <svg class="icon" fill="#E4405F" viewBox="0 0 24 24">
@@ -485,39 +902,36 @@
         <div class="window">
             <div class="title-bar">
                 <div class="title-text">
-                    <div class="title-icon"></div>
+                    <div class="title-icon-status status-unknown" id="statusIconAbout" title="Spotify status"></div>
                     <span>about_me.txt</span>
                 </div>
                 <div class="window-controls">
                     <div class="control-btn" onclick="minimizeWindow('aboutPage')">_</div>
-                    <div class="control-btn">□</div>
+                    <div class="control-btn" onclick="toggleFullscreenShoutout()">□</div>
                     <div class="control-btn" onclick="closeWindow('aboutPage')">×</div>
                 </div>
             </div>
             <div class="window-content">
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                <div class="petal"></div>
-                
                 <h1 style="margin-bottom: 20px;">About Me</h1>
                 
                 <p class="about-text">
-                    Vocal sound addict, two name manic
+                    Vocal sound addict, Two name manic (Qyliant/Cinnaminhz)
                 </p>
                 
                 <p class="about-text">
-                    Shoegaze fanatic<br>
-                    Second Degree Black Belt<br>
                     Artist<br>
-                    Studying in Cybersecurity<br>
-                    Autistic (High-Functioning!)
+                    Third Degree Black-belt<br>
+                    Autistic (High-Functioning!)<br>
+                    Studying in Cybersec<br>
+                    Over-Caffinated<br>
+                    Productionist<br>
+                    Vocalist<br>
+                    Shoegaze Fanatic
+                </p>
+
+                <p class="about-text" style="font-style: italic;">
+                    bag getter 'til my fingers get weak<br>
+                    You b!tches know better than to follow my lead
                 </p>
 
                 <div style="margin: 25px 0; padding: 15px; background: linear-gradient(180deg, #F0EDE2 0%, #E8E5D8 100%); border: 2px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF;">
@@ -536,10 +950,164 @@
         </div>
     </div>
 
+    <!-- Friends Shoutout Modal -->
+    <div class="modal-overlay" id="shoutoutOverlay" style="display: none;">
+        <div class="window shoutout-window">
+            <div class="title-bar title-bar-error">
+                <div class="title-text">
+                    <div class="title-icon-warning">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2 L23 21 H1 Z" fill="#FFD500" stroke="#5A4700" stroke-width="1" stroke-linejoin="round"/>
+                            <rect x="11" y="9" width="2" height="6" rx="1" fill="#3a2f00"/>
+                            <rect x="11" y="16.5" width="2" height="2" rx="1" fill="#3a2f00"/>
+                        </svg>
+                    </div>
+                    <span>Error!</span>
+                </div>
+                <div class="window-controls">
+                    <div class="control-btn" onclick="closeShoutout()">×</div>
+                </div>
+            </div>
+            <div class="window-content shoutout-content">
+                <div class="error-body">
+                    <div class="error-text">
+                        <p class="about-text" style="margin-bottom: 12px;">
+                            my awesome friends #selling
+                        </p>
+                        <div class="shoutout-names">
+                            <span>Xev</span><span>Farrow</span><span>josephi</span><span>oreo</span>
+                            <span>malti</span><span>Log</span><span>asap</span><span>ray</span>
+                            <span>mia</span><span>galaxy</span><span>void</span><span>merec</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kirara-frame">
+                    <img src="" alt="kirara" style="display:none;">
+                    <div class="kirara-label">kirara</div>
+                </div>
+
+                <div class="button-group" style="margin-top: 16px;">
+                    <a href="#" class="xp-button" onclick="closeShoutout(); return false;">
+                        <span>✓</span> OK
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ============================================================
+        // Universal Asset Resolver
+        // Lets you swap "PFP.jpg" for "PFP.gif", "PFP.png", etc. without
+        // touching the HTML. It checks every candidate extension for a
+        // given base name (e.g. "PFP", "main-video") and picks whichever
+        // file actually exists on the server, most-recently-modified
+        // one wins if more than one match is found.
+        //
+        // NOTE: requires the page to be served over http(s) — this will
+        // not work opened directly from disk (file://) because browsers
+        // block the HEAD requests needed to check for the files.
+        // ============================================================
+
+        const ASSET_IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp']; // priority order (used as tiebreaker)
+        const ASSET_VIDEO_EXTS = ['mp4', 'webm', 'mov'];
+
+        const assetResolveCache = {};
+
+        // Finds every file matching `./baseName.<ext>` for the given ext list,
+        // and returns the URL of the most recently modified one (falls back
+        // to extension priority order if modified dates are missing/tied).
+        async function resolveAsset(baseName, extensions) {
+            const cacheKey = baseName + '|' + extensions.join(',');
+            if (assetResolveCache[cacheKey]) return assetResolveCache[cacheKey];
+
+            const checks = extensions.map(async (ext, priorityIndex) => {
+                const url = `./${baseName}.${ext}`;
+                try {
+                    const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+                    if (!res.ok) return null;
+                    const lastModifiedHeader = res.headers.get('Last-Modified');
+                    const mtime = lastModifiedHeader ? new Date(lastModifiedHeader).getTime() : NaN;
+                    return { url, priorityIndex, mtime };
+                } catch (err) {
+                    return null; // file missing, blocked, or network error
+                }
+            });
+
+            const results = (await Promise.all(checks)).filter(Boolean);
+            if (results.length === 0) {
+                assetResolveCache[cacheKey] = null;
+                return null;
+            }
+
+            results.sort((a, b) => {
+                const aHasTime = !Number.isNaN(a.mtime);
+                const bHasTime = !Number.isNaN(b.mtime);
+                if (aHasTime && bHasTime && a.mtime !== b.mtime) {
+                    return b.mtime - a.mtime; // newest first
+                }
+                if (aHasTime !== bHasTime) {
+                    return aHasTime ? -1 : 1; // prefer whichever has a known mtime
+                }
+                return a.priorityIndex - b.priorityIndex; // tie -> extension list order
+            });
+
+            assetResolveCache[cacheKey] = results[0].url;
+            return results[0].url;
+        }
+
+        async function applyProfilePic() {
+            const url = await resolveAsset('PFP', ASSET_IMAGE_EXTS);
+            const el = document.querySelector('.profile-pic');
+            if (url) el.style.backgroundImage = `url('${url}')`;
+        }
+
+        async function applyKirara() {
+            const url = await resolveAsset('kirara', ASSET_IMAGE_EXTS);
+            const img = document.querySelector('.kirara-frame img');
+            const label = document.querySelector('.kirara-label');
+            if (url) {
+                img.src = url;
+                img.style.display = '';
+            } else {
+                img.style.display = 'none';
+                if (label) label.textContent = 'kirara (missing)';
+            }
+        }
+
+        async function setBgVideo(baseName) {
+            const url = await resolveAsset(baseName, ASSET_VIDEO_EXTS);
+            const video = document.getElementById('bgVideo');
+            if (url) {
+                video.querySelector('source').src = url;
+                video.load();
+                video.play().catch(() => {});
+            }
+        }
+
+        // Kick off initial resolution
+        applyProfilePic();
+        setBgVideo('main-video');
+
         // Last.fm API Configuration
         const LASTFM_API_KEY = 'bcf28fafee7079f8990693f30b549f10';
         const LASTFM_USERNAME = 'RainyJapan';
+
+        // Green/red title-bar status box: green = Spotify actively playing
+        // (scrobbling "now playing"), red = not currently playing.
+        function setSpotifyStatus(isNowPlaying) {
+            const icons = [
+                document.getElementById('statusIconMain'),
+                document.getElementById('statusIconAbout')
+            ];
+            icons.forEach(icon => {
+                if (!icon) return;
+                icon.classList.remove('status-online', 'status-offline', 'status-unknown');
+                icon.classList.add(isNowPlaying ? 'status-online' : 'status-offline');
+                icon.title = isNowPlaying ? 'Online — listening on Spotify' : 'Offline — not currently playing';
+            });
+        }
 
         // Fetch currently playing track
         async function fetchNowPlaying() {
@@ -552,36 +1120,65 @@
                 if (data.recenttracks && data.recenttracks.track && data.recenttracks.track.length > 0) {
                     const track = data.recenttracks.track[0];
                     const isNowPlaying = track['@attr'] && track['@attr'].nowplaying === 'true';
+                    setSpotifyStatus(isNowPlaying);
                     
                     const artist = track.artist['#text'] || track.artist;
                     const song = track.name;
                     const album = track.album['#text'] || 'Unknown Album';
-                    
+
+                    const images = track.image || [];
+                    const coverUrl = (images.find(im => im.size === 'extralarge')
+                        || images.find(im => im.size === 'large')
+                        || images[images.length - 1]
+                        || {})['#text'] || '';
+
                     const statusIcon = isNowPlaying ? '🎵' : '⏸️';
                     const statusText = isNowPlaying ? 'Now Playing' : 'Last Played';
-                    
+
+                    const coverImg = coverUrl
+                        ? `<img src="${coverUrl}" alt="Album cover"
+                             style="width:56px; height:56px; flex-shrink:0; object-fit:cover;
+                                    border:2px solid; border-color:#808080 #fff #fff #808080;"
+                             onerror="this.style.display='none'">`
+                        : '';
+
                     document.getElementById('nowPlaying').innerHTML = `
-                        <div style="margin-bottom: 5px;"><strong>${statusIcon} ${statusText}</strong></div>
-                        <div style="margin-bottom: 3px;">🎵 <strong>${song}</strong></div>
-                        <div style="margin-bottom: 3px;">👤 ${artist}</div>
-                        <div style="opacity: 0.7;">💿 ${album}</div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            ${coverImg}
+                            <div style="flex:1; min-width:0;">
+                                <div style="margin-bottom: 5px;"><strong>${statusIcon} ${statusText}</strong></div>
+                                <div style="margin-bottom: 3px;">🎵 <strong>${song}</strong></div>
+                                <div style="margin-bottom: 3px;">👤 ${artist}</div>
+                                <div style="opacity: 0.7;">💿 ${album}</div>
+                            </div>
+                        </div>
                     `;
                 } else {
+                    setSpotifyStatus(false);
                     document.getElementById('nowPlaying').innerHTML = 
                         '<div style="opacity: 0.6;">No recent tracks found</div>';
                 }
             } catch (error) {
                 console.error('Error fetching Last.fm data:', error);
+                setSpotifyStatus(false);
                 document.getElementById('nowPlaying').innerHTML = 
                     '<div style="opacity: 0.6;">Unable to load music data</div>';
             }
         }
 
         // Update every 30 seconds
+        let musicUpdatesStarted = false;
         function startMusicUpdates() {
+            if (musicUpdatesStarted) return; // avoid stacking intervals if called more than once
+            musicUpdatesStarted = true;
             fetchNowPlaying();
             setInterval(fetchNowPlaying, 30000);
         }
+
+        // Start polling right away so the status box is accurate even
+        // before the About page (which hosts the full Now Playing panel)
+        // is ever opened.
+        startMusicUpdates();
 
         // VHS Timestamp
         function updateVHSTime() {
@@ -595,10 +1192,112 @@
             
             document.getElementById('vhsTime').textContent = 
                 `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+
+            let clockHours = now.getHours();
+            const ampm = clockHours >= 12 ? 'PM' : 'AM';
+            clockHours = clockHours % 12 || 12;
+            document.getElementById('taskbarClock').textContent = 
+                `${clockHours}:${minutes} ${ampm}`;
         }
         
         updateVHSTime();
         setInterval(updateVHSTime, 1000);
+
+        // Sakura Petals
+        const PETAL_COUNT = 22;
+        const petalsContainer = document.getElementById('petalsContainer');
+        const activePetals = [];
+
+        function spawnPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal-fall';
+
+            const size = 16 + Math.random() * 16;        // 16-32px
+            const left = Math.random() * 100;             // 0-100vw
+            const fallDuration = 11 + Math.random() * 9;  // 11-20s
+            const swayAmount = 40 + Math.random() * 70;   // 40-110px
+            const swayDuration = 2.2 + Math.random() * 2.2; // 2.2-4.4s
+            const rotateDuration = 3 + Math.random() * 4;   // 3-7s
+
+            petal.style.left = left + 'vw';
+            petal.style.setProperty('--size', size + 'px');
+            petal.style.setProperty('--sway', swayAmount + 'px');
+            petal.style.animationDuration = fallDuration + 's';
+
+            const gust = document.createElement('div');
+            gust.className = 'petal-gust';
+
+            const sway = document.createElement('div');
+            sway.className = 'petal-sway';
+            sway.style.animationDuration = swayDuration + 's';
+
+            const shape = document.createElement('div');
+            shape.className = 'petal-shape';
+            shape.style.animationDuration = rotateDuration + 's';
+
+            sway.appendChild(shape);
+            gust.appendChild(sway);
+            petal.appendChild(gust);
+            petalsContainer.appendChild(petal);
+
+            const petalState = { el: gust, x: 0, y: 0, rot: 0 };
+            activePetals.push(petalState);
+
+            setTimeout(() => {
+                const idx = activePetals.indexOf(petalState);
+                if (idx !== -1) activePetals.splice(idx, 1);
+                petal.remove();
+                spawnPetal();
+            }, fallDuration * 1000 + Math.random() * 4000);
+        }
+
+        for (let i = 0; i < PETAL_COUNT; i++) {
+            setTimeout(spawnPetal, Math.random() * 9000);
+        }
+
+        function triggerPetalGusts() {
+            activePetals.forEach(p => {
+                // not every petal catches the draft the same way - some barely move, some get flung
+                if (Math.random() > 0.78) return;
+
+                const kick = Math.random(); // independent roll each time, not tied to size
+                const punch = kick > 0.85 ? 1.8 : (kick > 0.55 ? 1 : 0.5); // occasional huge draft
+
+                const dx = (55 + Math.random() * 140) * punch;
+                const dy = (15 + Math.random() * 55) * punch;
+                const drot = (Math.random() * 30 - 8) * punch;
+                const duration = 1.3 + Math.random() * 1.6;
+
+                p.x += dx;
+                p.y += dy;
+                p.rot += drot;
+
+                p.el.style.transitionDuration = duration + 's';
+                p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rot}deg)`;
+            });
+        }
+
+        function scheduleWindGust() {
+            const nextGust = (10 + Math.random() * 10) * 1000; // 10-20s
+            setTimeout(() => {
+                petalsContainer.classList.add('gust');
+                triggerPetalGusts();
+                setTimeout(() => petalsContainer.classList.remove('gust'), 2400);
+                scheduleWindGust();
+            }, nextGust);
+        }
+        scheduleWindGust();
+
+        // Friends Shoutout (the "fullscreen" button is a joke — it doesn't
+        // actually fullscreen anything, it just throws this fake error)
+        function toggleFullscreenShoutout() {
+            document.getElementById('shoutoutOverlay').style.display = 'flex';
+            applyKirara();
+        }
+
+        function closeShoutout() {
+            document.getElementById('shoutoutOverlay').style.display = 'none';
+        }
 
         // Window Management
         function closeWindow(windowId) {
@@ -641,18 +1340,17 @@
         function showAbout() {
             document.getElementById('mainPage').style.display = 'none';
             document.getElementById('aboutPage').style.display = 'flex';
-            // Change video for about page
-            document.getElementById('bgVideo').src = './about-video.mp4';
-            // Start fetching music when about page is opened
-            startMusicUpdates();
+            // Change video for about page (resolves about-video.* to whatever exists)
+            setBgVideo('about-video');
         }
 
         function showMain() {
             document.getElementById('aboutPage').style.display = 'none';
             document.getElementById('mainPage').style.display = 'flex';
-            // Change back to main video
-            document.getElementById('bgVideo').src = './main-video.mp4';
+            // Change back to main video (resolves main-video.* to whatever exists)
+            setBgVideo('main-video');
         }
     </script>
+</div>
 </body>
 </html>
